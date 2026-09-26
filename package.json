@@ -1,0 +1,17 @@
+{
+    "name": "elm-todo",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "dev": "concurrently -k -n elm,web -c cyan,green \"elm-watch hot\" \"serve -s .\""
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "devDependencies": {
+        "concurrently": "^10.0.5",
+        "elm-watch": "^1.2.8",
+        "serve": "^14.2.6"
+    }
+}

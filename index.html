@@ -1,0 +1,29 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Todos</title>
+  </head>
+  <body>
+    <script src="/build/main.js"></script>
+    <script>
+      const STORAGE_KEY = "todos";
+
+      // Flags: hand Elm the saved todos (a JSON string, or null) at startup.
+      const app = Elm.Main.init({ flags: localStorage.getItem(STORAGE_KEY) });
+
+      // Outgoing port (Elm → JS): save whenever Elm asks.
+      app.ports.saveTodos.subscribe((todos) => {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(todos));
+      });
+
+      // Incoming port (JS → Elm): the "storage" event fires in *other* tabs
+      // when localStorage changes, so open tabs stay in sync.
+      window.addEventListener("storage", (event) => {
+        if (event.key === STORAGE_KEY) {
+          app.ports.todosChanged.send(event.newValue);
+        }
+      });
+    </script>
+  </body>
+</html>
