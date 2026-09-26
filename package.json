@@ -4,7 +4,7 @@
     "description": "",
     "main": "index.js",
     "scripts": {
-        "dev": "concurrently -k -n elm,web -c cyan,green \"elm-watch hot\" \"serve -s .\""
+        "dev": "concurrently -k -n elm,web,convex -c cyan,green,magenta \"elm-watch hot\" \"serve -s .\" \"convex dev\""
     },
     "keywords": [],
     "author": "",
@@ -13,5 +13,8 @@
         "concurrently": "^10.0.5",
         "elm-watch": "^1.2.8",
         "serve": "^14.2.6"
+    },
+    "dependencies": {
+        "convex": "^1.46.0"
     }
 }

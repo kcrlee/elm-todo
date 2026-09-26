@@ -6,23 +6,29 @@
   </head>
   <body>
     <script src="/build/main.js"></script>
+    <script src="/node_modules/convex/dist/browser.bundle.js"></script>
     <script>
-      const STORAGE_KEY = "todos";
+      // The deployment URL is a public endpoint, not a secret.
+      const CONVEX_URL = "https://exciting-bee-498.convex.cloud";
+      const client = new convex.ConvexClient(CONVEX_URL);
 
-      // Flags: hand Elm the saved todos (a JSON string, or null) at startup.
-      const app = Elm.Main.init({ flags: localStorage.getItem(STORAGE_KEY) });
+      const app = Elm.Main.init();
 
-      // Outgoing port (Elm → JS): save whenever Elm asks.
-      app.ports.saveTodos.subscribe((todos) => {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(todos));
+      // Outgoing port (Elm → Convex): run the create mutation.
+      app.ports.createTodo.subscribe((draft) => {
+        client.mutation("todos:create", draft).catch(console.error);
       });
 
-      // Incoming port (JS → Elm): the "storage" event fires in *other* tabs
-      // when localStorage changes, so open tabs stay in sync.
-      window.addEventListener("storage", (event) => {
-        if (event.key === STORAGE_KEY) {
-          app.ports.todosChanged.send(event.newValue);
-        }
+      // Outgoing port (Elm → Convex): { todoId, isCompleted } matches the
+      // markCompleted mutation's args, so it's passed straight through.
+      app.ports.markCompleted.subscribe((args) => {
+        client.mutation("todos:markCompleted", args).catch(console.error);
+      });
+
+      // Incoming port (Convex → Elm): fires on load and again whenever the
+      // todos table changes, in this tab or any other client.
+      client.onUpdate("todos:list", {}, (todos) => {
+        app.ports.todosUpdated.send(todos);
       });
     </script>
   </body>
